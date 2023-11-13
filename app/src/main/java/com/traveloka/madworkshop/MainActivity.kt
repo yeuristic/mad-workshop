@@ -25,6 +25,8 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -82,5 +84,9 @@ suspend fun generateName(): String {
     return "Android"
 }
 
-suspend fun calculateFibonacci(): Int = badFibonacci(40)
+suspend fun calculateFibonacci(): Int = suspendCoroutine { cont ->
+    badFibonacci(40) {
+        cont.resume(it)
+    }
+}
 
