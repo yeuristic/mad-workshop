@@ -19,6 +19,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.traveloka.madworkshop.ui.theme.MadWorkshopTheme
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -45,22 +47,24 @@ fun Widget() {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Spacer(modifier = Modifier.size(32.dp))
         Button(onClick = {
-            val start = System.currentTimeMillis()
-            val name = generateName()
-            val end = System.currentTimeMillis()
-            Toast.makeText(
-                context,
-                "Toast $name after ${end - start} ms",
-                Toast.LENGTH_SHORT
-            ).show()
+            scope.launch {
+                val start = System.currentTimeMillis()
+                val name = generateName()
+                val end = System.currentTimeMillis()
+                Toast.makeText(
+                    context,
+                    "Toast $name after ${end - start} ms",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
         }) {
             Text(text = "3 seconds Button")
         }
     }
 }
 
-//TODO
-fun generateName(): String {
+suspend fun generateName(): String {
+    delay(3000)
     return "Android"
 }
 
