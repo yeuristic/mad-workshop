@@ -1,7 +1,6 @@
 package com.traveloka.madworkshop
 
 import android.os.Bundle
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Column
@@ -18,7 +17,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.traveloka.madworkshop.ui.theme.MadWorkshopTheme
+import com.traveloka.madworkshop.user.User
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -30,7 +31,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    Widget()
+                    MainWidget()
                 }
             }
 
@@ -39,28 +40,36 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun Widget() {
+fun MainWidget() {
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
+    val vm: MainViewModel = viewModel()
+    MainLayout(state = vm.state) {
+        vm.fetch()
+    }
+}
+
+@Composable
+fun MainLayout(state: MainState, fetch: () -> Unit) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        UserLayout(user = state.user.value)
         Spacer(modifier = Modifier.size(32.dp))
         Button(onClick = {
-            val start = System.currentTimeMillis()
-            val name = generateName()
-            val end = System.currentTimeMillis()
-            Toast.makeText(
-                context,
-                "Toast $name after ${end - start} ms",
-                Toast.LENGTH_SHORT
-            ).show()
+            fetch()
         }) {
-            Text(text = "3 seconds Button")
+            Text(text = "Fetch")
         }
     }
 }
 
-//TODO
-fun generateName(): String {
-    return "Android"
+@Composable
+fun UserLayout(user: User?) {
+    if (user != null) {
+        Column {
+            Text(text = "Gender: ${user.gender}")
+            Text(text = "Name: ${user.fullName()}")
+            Text(text = "Email: ${user.email}")
+            Text(text = "Phone: ${user.phone}")
+        }
+    }
 }
-
