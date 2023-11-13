@@ -1,5 +1,6 @@
 package com.traveloka.madworkshop
 
+import android.content.Context
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -20,6 +21,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.traveloka.madworkshop.ui.theme.MadWorkshopTheme
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -46,25 +48,33 @@ class MainActivity : ComponentActivity() {
 fun Widget() {
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
+
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Spacer(modifier = Modifier.size(32.dp))
         Button(onClick = {
             scope.launch(Dispatchers.Default) {
                 val start = System.currentTimeMillis()
-                val fib = calculateFibonacci()
+                val nameDeferred = async { generateName() }
+                val fibDeferred = async { calculateFibonacci() }
+                val name = nameDeferred.await()
+                val fib = fibDeferred.await()
                 val end = System.currentTimeMillis()
                 withContext(Dispatchers.Main) {
-                    Toast.makeText(
-                        context,
-                        "Toast $fib after ${end - start} ms",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    showMessage(context, "$name $fib", end - start)
                 }
             }
         }) {
-            Text(text = "Calc Fib Button")
+            Text(text = "Start")
         }
     }
+}
+
+private fun showMessage(context: Context, message: String, duration: Long) {
+    Toast.makeText(
+        context,
+        "Toast $message after $duration ms",
+        Toast.LENGTH_SHORT
+    ).show()
 }
 
 suspend fun generateName(): String {

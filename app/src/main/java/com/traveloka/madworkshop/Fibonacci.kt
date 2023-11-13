@@ -6,3 +6,11 @@ fun badFibonacci(n: Int): Int = when (n) {
     1 -> 1
     else -> badFibonacci(n - 2) + badFibonacci(n - 1)
 }
+
+fun badFibonacci(n: Int, callback: OnFibonacciCompleted) {
+    callback.onFibonacciCompleted(badFibonacci(n))
+}
+
+fun interface OnFibonacciCompleted {
+    fun onFibonacciCompleted(result: Int)
+}
