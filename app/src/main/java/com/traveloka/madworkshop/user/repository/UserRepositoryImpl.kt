@@ -7,6 +7,6 @@ class UserRepositoryImpl(
     private val userService: UserService
 ): UserRepository {
     override suspend fun getUser(): User {
-        TODO()
+        return userService.getRandomUser().results.first()
     }
 }
