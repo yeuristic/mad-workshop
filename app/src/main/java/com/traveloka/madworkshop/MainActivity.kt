@@ -19,8 +19,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.traveloka.madworkshop.ui.theme.MadWorkshopTheme
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -47,18 +49,20 @@ fun Widget() {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Spacer(modifier = Modifier.size(32.dp))
         Button(onClick = {
-            scope.launch {
+            scope.launch(Dispatchers.Default) {
                 val start = System.currentTimeMillis()
-                val name = generateName()
+                val fib = calculateFibonacci()
                 val end = System.currentTimeMillis()
-                Toast.makeText(
-                    context,
-                    "Toast $name after ${end - start} ms",
-                    Toast.LENGTH_SHORT
-                ).show()
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(
+                        context,
+                        "Toast $fib after ${end - start} ms",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
             }
         }) {
-            Text(text = "3 seconds Button")
+            Text(text = "Calc Fib Button")
         }
     }
 }
@@ -67,4 +71,6 @@ suspend fun generateName(): String {
     delay(3000)
     return "Android"
 }
+
+suspend fun calculateFibonacci(): Int = badFibonacci(40)
 
