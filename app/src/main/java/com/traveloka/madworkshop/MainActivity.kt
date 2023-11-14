@@ -6,7 +6,10 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -52,12 +55,16 @@ fun MainWidget() {
 @Composable
 fun MainLayout(state: MainState, fetch: () -> Unit) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        UserLayout(user = state.user.value)
-        Spacer(modifier = Modifier.size(32.dp))
         Button(onClick = {
             fetch()
         }) {
             Text(text = "Fetch")
+        }
+        Spacer(modifier = Modifier.size(32.dp))
+        LazyColumn(modifier = Modifier.fillMaxWidth()) {
+            items(items = state.users.toList(), key = { it.email }) {
+                UserLayout(user = it)
+            }
         }
     }
 }
